@@ -8,6 +8,12 @@ Now it’s work just on **windows client**.
 
 pip3 install -r requirements.txt
 
+## Usage Example
+
+In windows CMD or Powershell enter: *``` python Cisco-FMC-AccessRule-Hitcount.py https://fmc_address Username ```*  
+It will prompt for enter password and then create excel file in desktop. The file name start date.  
+Notice in FMC address it's **``` https ```**.  
+
 ## To do list
 
 - [x] Export Hit Count as Excel file in desktop
