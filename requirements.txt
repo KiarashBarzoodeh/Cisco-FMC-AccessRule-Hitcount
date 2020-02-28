@@ -1,0 +1,3 @@
+urllib3==1.25.3
+requests==2.22.0
+openpyexcel==2.5.14
