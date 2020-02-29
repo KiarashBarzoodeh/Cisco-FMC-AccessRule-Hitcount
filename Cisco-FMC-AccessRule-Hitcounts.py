@@ -119,6 +119,23 @@ else:
 
 # end get access policies id
 
+# start refrshing hit counts
+
+api_refresh_hitcount = f'/api/fmc_config/v1/domain/{domain_id}/policy/accesspolicies/{access_policies_id}/operational/hitcounts?filter=deviceId:{sensor_id}'
+
+uri_refresh_hit = url + api_refresh_hitcount
+
+put_refresh_hit = requests.put(
+    url=uri_refresh_hit, verify=False, headers=headers)
+
+if put_refresh_hit.status_code == 202:
+    print(
+        f'Access Rule {policy_name} hitcount is refreshed based on {sensor_name}')
+else:
+    print(f'Warning!\nAccess Rule {policy_name} Not REFRESHED!!!')
+
+# end refrshing hit counts
+
 # start get access rule hit count
 
 api_rule_hits = f'/api/fmc_config/v1/domain/{domain_id}/policy/accesspolicies/{access_policies_id}/operational/hitcounts?filter=deviceId:{sensor_id}&expanded=true'
