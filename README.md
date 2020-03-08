@@ -19,7 +19,7 @@ Notice in FMC address it's **``` https ```**.
 - [x] Export Hit Count as Excel file in desktop
 - [x] Possible use for multiple devices and multiple access policies
 - [x] Refresh Hit Counts
-- [ ] Check user and password correction
-- [ ] Check IP Connectivity
+- [x] Check user and password correction
+- [x] Check IP Connectivity
 - [ ] Make error detection and exception
 - [ ] Make containerization script
