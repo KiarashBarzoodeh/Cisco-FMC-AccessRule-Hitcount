@@ -1,6 +1,6 @@
 # This script work with Cisco Firepower Management Center 6.4 and later
 # for using this script please run it as example below:
-# python.exe api_hitcoutn_v002.py http://<fmc_address> <username> <password>
+# python.exe api_hitcoutn_v002.py http://<fmc_address> <username>
 # this script check number of sensor and access policies and if there are more than
 # one, ask you to choose your desirable sensor and access policy
 # finally creates a excel file with name which distinguished by date, sensor name, access policy name
@@ -55,11 +55,11 @@ api_sensor_id = f'/api/fmc_config/v1/domain/{domain_id}/devices/devicerecords?ex
 api_access_policies = f'/api/fmc_config/v1/domain/{domain_id}/policy/accesspolicies?expanded=true'
 
 url = fmc_address
-uri_toekn_gen = url + api_token_gen
+uri_token_gen = url + api_token_gen
 uri_sensor_id = url + api_sensor_id
 uri_access_policies = url + api_access_policies
 
-responde_code = [400, 422]
+error_responde_code = [400, 401, 422]
 
 # start generate token
 # use token[0] as X-auth-access-token
@@ -67,14 +67,31 @@ responde_code = [400, 422]
 
 token = []
 
-toekn_req = requests.post(url=uri_toekn_gen, auth=HTTPBasicAuth(
-    user, password), verify=False,)
+try:
+    token_req = requests.post(url=uri_token_gen, auth=HTTPBasicAuth(
+        user, password), verify=False,)
 
-for key in toekn_req.headers:
+except requests.exceptions.Timeout:
+    print('A connection attempt failed!!! \nBecause the connected party did not properly respond after a period of time, \nor \nestablished connection failed because connected host has failed to respond\n\n')
+    exit()
+except requests.exceptions.ConnectionError:
+    print('A connection attempt failed!!! \nBecause the connected party did not properly respond after a period of time, \nor \nestablished connection failed because connected host has failed to respond\n\n')
+    exit()
+
+try:
+    token_req_report = json.loads(token_req.content)
+    if token_req.status_code in error_responde_code:
+        for message in token_req_report['error']['messages']:
+            print(message['description'], '\n\n')
+        exit()
+except json.decoder.JSONDecodeError:
+    pass
+
+for key in token_req.headers:
     if key == 'X-auth-access-token':
-        token.append(toekn_req.headers['X-auth-access-token'])
+        token.append(token_req.headers['X-auth-access-token'])
     if key == 'X-auth-refresh-token':
-        token.append(toekn_req.headers['X-auth-refresh-token'])
+        token.append(token_req.headers['X-auth-refresh-token'])
 
 # end generation token
 
@@ -130,7 +147,7 @@ put_refresh_hit = requests.put(
 
 if put_refresh_hit.status_code == 202:
     print(
-        f'Access Rule {policy_name} hitcount is refreshed based on {sensor_name}')
+        f'Access Rule {policy_name} hitcount is refreshed on {sensor_name} Sensor')
 else:
     print(f'Warning!\nAccess Rule {policy_name} Not REFRESHED!!!')
 
